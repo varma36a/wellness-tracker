@@ -1,10 +1,10 @@
-# One-time setup for auto-deploy on every push to main
+# Deploy to Vercel (free, auto-deploy on push)
 
-## Step 1 — Import on Vercel (web, ~2 min)
+## 1. Connect GitHub to Vercel (one-time)
 
-1. Open: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvarma36a%2Fwellness-tracker
-2. Sign in with GitHub → Import `wellness-tracker`
-3. Add environment variables **before** first deploy:
+1. Open https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvarma36a%2Fwellness-tracker
+2. Sign in with GitHub → Import the repo
+3. Add **Environment Variables** before the first deploy:
 
 | Name | Value |
 |------|--------|
@@ -13,37 +13,42 @@
 
 4. Click **Deploy**
 
-## Step 2 — Supabase auth URLs
+After this, **every push to `main` auto-deploys** via Vercel's Git integration. No GitHub Actions or tokens needed.
 
-After deploy, copy your Vercel URL (e.g. `https://wellness-tracker-xxx.vercel.app`).
+## 2. Manual redeploy (optional)
 
-Supabase → **Authentication → URL Configuration**:
+Vercel Dashboard → **Deployments** → **Redeploy** (use if you changed env vars).
 
-- **Site URL:** `https://your-app.vercel.app`
+Or locally:
+
+```bash
+npx vercel login   # once
+npx vercel --prod
+```
+
+## 3. Supabase auth URLs
+
+Supabase → **Authentication → URL Configuration**
+
+- **Site URL:** your Vercel URL
 - **Redirect URLs:** `https://your-app.vercel.app/**`
 
-## Step 3 — GitHub Actions auto-deploy (optional)
+## 4. Local development
 
-Get these from Vercel → Project → **Settings → General**:
+```bash
+cp .env.local.example .env.local
+# edit .env.local with the same Supabase values
+npm run dev
+```
 
-- `VERCEL_ORG_ID`
-- `VERCEL_PROJECT_ID`
+## 5. Journal events table
 
-Create a token: Vercel → **Account Settings → Tokens**
+Run once in Supabase SQL Editor: `supabase/migrations/add_journal_events.sql`
 
-Add GitHub secrets at  
-https://github.com/varma36a/wellness-tracker/settings/secrets/actions
+## Troubleshooting
 
-| Secret | Value |
-|--------|--------|
-| `VERCEL_TOKEN` | Your Vercel token |
-| `VERCEL_ORG_ID` | From project settings |
-| `VERCEL_PROJECT_ID` | From project settings |
+**GitHub Actions error `--token`, but it's missing a value**  
+That workflow was removed. Deploys are handled by Vercel directly when the repo is linked in the Vercel dashboard.
 
-Every push to `main` will auto-deploy.
-
-## Step 4 — Journal events table
-
-If not done yet, run in Supabase SQL Editor:
-
-`supabase/migrations/add_journal_events.sql`
+**500 MIDDLEWARE_INVOCATION_FAILED**  
+Check Supabase env vars are set in Vercel and redeploy.
