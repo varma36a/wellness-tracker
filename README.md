@@ -76,7 +76,42 @@ Open [http://localhost:3000](http://localhost:3000) → **Create your account** 
 
 ---
 
-## Deploy (optional)
+## Deploy (free on Vercel)
+
+### 1. Push is on GitHub
+
+Repo: **https://github.com/varma36a/wellness-tracker**
+
+### 2. Deploy on Vercel (free)
+
+1. Go to [vercel.com/new](https://vercel.com/new) and sign in with GitHub.
+2. **Import** the `wellness-tracker` repository.
+3. Framework preset: **Next.js** (auto-detected).
+4. Add **Environment Variables** before deploying:
+
+| Name | Value |
+|------|--------|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://YOUR_PROJECT.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your anon public key (`eyJ...`) from Supabase → Settings → API |
+
+5. Click **Deploy** — free Hobby plan is enough for personal use.
+
+### 3. Configure Supabase for your live URL
+
+After deploy, copy your Vercel URL (e.g. `https://wellness-tracker-xxx.vercel.app`).
+
+In **Supabase → Authentication → URL Configuration**:
+
+- **Site URL:** your Vercel URL
+- **Redirect URLs:** add `https://your-app.vercel.app/**`
+
+### 4. Run journal events migration (if not done)
+
+Supabase → SQL Editor → run `supabase/migrations/add_journal_events.sql`
+
+---
+
+## Deploy (optional — CLI)
 
 Deploy to [Vercel](https://vercel.com) for free:
 
