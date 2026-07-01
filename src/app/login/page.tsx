@@ -20,7 +20,7 @@ export default function LoginPage() {
 
     try {
       const supabase = createClient();
-      const { error: authError } = await supabase.auth.signInWithPassword({
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -31,7 +31,17 @@ export default function LoginPage() {
         return;
       }
 
-      router.push("/dashboard");
+      if (data.user) {
+        const { data: settings } = await supabase
+          .from("user_settings")
+          .select("pin_enabled")
+          .eq("user_id", data.user.id)
+          .maybeSingle();
+
+        router.push(settings?.pin_enabled ? "/pin" : "/dashboard");
+      } else {
+        router.push("/dashboard");
+      }
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Configuration error");
@@ -70,15 +80,6 @@ export default function LoginPage() {
           <h2 className="text-2xl font-bold text-sage-900">Welcome back</h2>
           <p className="mt-2 text-sage-600">Sign in to your personal wellness journal</p>
 
-          {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === "PASTE_YOUR_ANON_KEY_HERE" ||
-          !process.env.NEXT_PUBLIC_SUPABASE_URL ? (
-            <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Supabase env vars missing on the server. In Vercel → Settings → Environment
-              Variables, add <code className="font-mono">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
-              <code className="font-mono">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, then redeploy.
-            </p>
-          ) : null}
-
           <form onSubmit={handleLogin} className="mt-8 space-y-5">
             <div>
               <label htmlFor="email" className="label">
@@ -91,14 +92,22 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="input-field"
-                placeholder="you@example.com"
+                placeholder="rohit36a@gmail.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="label">
-                Password
-              </label>
+              <div className="mb-1.5 flex items-center justify-between">
+                <label htmlFor="password" className="label mb-0">
+                  Password
+                </label>
+                <Link
+                  href="/forgot-password"
+                  className="text-xs font-medium text-blaze-purple hover:text-blaze-pink"
+                >
+                  Forgot password?
+                </Link>
+              </div>
               <input
                 id="password"
                 type="password"
@@ -119,7 +128,13 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-sage-600">
+          <p className="mt-4 text-center text-sm text-sage-600">
+            <Link href="/forgot-pin" className="font-medium text-blaze-purple hover:text-blaze-pink">
+              Forgot PIN?
+            </Link>
+          </p>
+
+          <p className="mt-4 text-center text-sm text-sage-600">
             First time here?{" "}
             <Link href="/signup" className="font-semibold text-blaze-purple hover:text-blaze-pink">
               Create your account

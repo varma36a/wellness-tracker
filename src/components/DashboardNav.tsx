@@ -9,6 +9,7 @@ import {
   CheckSquare,
   Heart,
   LayoutDashboard,
+  Settings,
   Sparkles,
   LogOut,
   Menu,
@@ -22,6 +23,7 @@ const navItems = [
   { href: "/dashboard/checklist", label: "Daily Checklist", icon: CheckSquare },
   { href: "/dashboard/reflections", label: "Reflections", icon: BookOpen },
   { href: "/dashboard/events", label: "Journal Events", icon: Brain },
+  { href: "/dashboard/settings", label: "Security", icon: Settings },
 ];
 
 export function DashboardNav({ email }: { email: string }) {
@@ -31,6 +33,7 @@ export function DashboardNav({ email }: { email: string }) {
 
   async function handleSignOut() {
     const supabase = createClient();
+    document.cookie = "pin_verified=; Max-Age=0; path=/";
     await supabase.auth.signOut();
     router.push("/login");
     router.refresh();

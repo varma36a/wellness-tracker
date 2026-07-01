@@ -58,6 +58,15 @@ export type JournalEvent = {
   updated_at: string;
 };
 
+export type UserSettings = {
+  user_id: string;
+  pin_hash: string | null;
+  pin_enabled: boolean;
+  updated_at: string;
+};
+
+export const PIN_LENGTH = 4;
+
 export const EVENT_TYPES = [
   { value: "trigger", label: "Trigger", description: "Something activated an old pattern" },
   { value: "breakthrough", label: "Breakthrough", description: "A new insight or shift" },
