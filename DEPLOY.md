@@ -1,54 +1,49 @@
-# Deploy from `.env.local` (no manual Vercel paste)
+# One-time setup for auto-deploy on every push to main
 
-All secrets live in **one file**: `.env.local` (never committed to git).
+## Step 1 — Import on Vercel (web, ~2 min)
 
-## 1. Configure locally
+1. Open: https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvarma36a%2Fwellness-tracker
+2. Sign in with GitHub → Import `wellness-tracker`
+3. Add environment variables **before** first deploy:
 
-```bash
-cd ~/wellness-tracker
-cp .env.local.example .env.local   # skip if you already have it
-```
+| Name | Value |
+|------|--------|
+| `NEXT_PUBLIC_SUPABASE_URL` | `https://pxlamtbiernzrobwglwo.supabase.co` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Your anon key from Supabase → Settings → API |
 
-Edit `.env.local`:
+4. Click **Deploy**
 
-```env
-NEXT_PUBLIC_SUPABASE_URL=https://pxlamtbiernzrobwglwo.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbG...your full anon key
-```
+## Step 2 — Supabase auth URLs
 
-Get the anon key: **Supabase → Settings → API → anon public**
+After deploy, copy your Vercel URL (e.g. `https://wellness-tracker-xxx.vercel.app`).
 
-Verify:
+Supabase → **Authentication → URL Configuration**:
 
-```bash
-npm run env:check
-```
-
-## 2. Run locally
-
-```bash
-npm run dev
-```
-
-Next.js loads `.env.local` automatically.
-
-## 3. Deploy to Vercel from `.env.local`
-
-```bash
-npx vercel login          # once
-npm run env:sync-vercel   # pushes .env.local → Vercel
-npm run deploy            # production deploy
-```
-
-Or after `env:sync-vercel`, redeploy from the Vercel dashboard.
-
-## 4. Supabase auth URLs (after first deploy)
-
-Supabase → **Authentication → URL Configuration**
-
-- **Site URL:** your Vercel URL
+- **Site URL:** `https://your-app.vercel.app`
 - **Redirect URLs:** `https://your-app.vercel.app/**`
 
-## 5. Journal events table
+## Step 3 — GitHub Actions auto-deploy (optional)
 
-Run once in Supabase SQL Editor: `supabase/migrations/add_journal_events.sql`
+Get these from Vercel → Project → **Settings → General**:
+
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
+Create a token: Vercel → **Account Settings → Tokens**
+
+Add GitHub secrets at  
+https://github.com/varma36a/wellness-tracker/settings/secrets/actions
+
+| Secret | Value |
+|--------|--------|
+| `VERCEL_TOKEN` | Your Vercel token |
+| `VERCEL_ORG_ID` | From project settings |
+| `VERCEL_PROJECT_ID` | From project settings |
+
+Every push to `main` will auto-deploy.
+
+## Step 4 — Journal events table
+
+If not done yet, run in Supabase SQL Editor:
+
+`supabase/migrations/add_journal_events.sql`

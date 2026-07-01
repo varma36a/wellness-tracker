@@ -6,10 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "env:check": "node scripts/check-env.mjs",
-    "env:sync-vercel": "node scripts/sync-env-to-vercel.mjs",
-    "deploy": "npm run env:check && npx vercel --prod"
+    "lint": "next lint"
   },
   "dependencies": {
     "@supabase/ssr": "^0.5.2",
