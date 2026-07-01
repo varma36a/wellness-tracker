@@ -18,20 +18,25 @@ export default function LoginPage() {
     setLoading(true);
     setError(null);
 
-    const supabase = createClient();
-    const { error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const supabase = createClient();
+      const { error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (authError) {
-      setError(authError.message);
+      if (authError) {
+        setError(authError.message);
+        setLoading(false);
+        return;
+      }
+
+      router.push("/dashboard");
+      router.refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Configuration error");
       setLoading(false);
-      return;
     }
-
-    router.push("/dashboard");
-    router.refresh();
   }
 
   return (
@@ -64,6 +69,15 @@ export default function LoginPage() {
 
           <h2 className="text-2xl font-bold text-sage-900">Welcome back</h2>
           <p className="mt-2 text-sage-600">Sign in to your personal wellness journal</p>
+
+          {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === "PASTE_YOUR_ANON_KEY_HERE" ||
+          !process.env.NEXT_PUBLIC_SUPABASE_URL ? (
+            <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              Supabase env vars missing on the server. In Vercel → Settings → Environment
+              Variables, add <code className="font-mono">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
+              <code className="font-mono">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, then redeploy.
+            </p>
+          ) : null}
 
           <form onSubmit={handleLogin} className="mt-8 space-y-5">
             <div>
