@@ -71,11 +71,14 @@ export default function LoginPage() {
           <p className="mt-2 text-sage-600">Sign in to your personal wellness journal</p>
 
           {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === "PASTE_YOUR_ANON_KEY_HERE" ||
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY === "your-anon-key" ||
           !process.env.NEXT_PUBLIC_SUPABASE_URL ? (
             <p className="mt-4 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800">
-              Supabase env vars missing on the server. In Vercel → Settings → Environment
-              Variables, add <code className="font-mono">NEXT_PUBLIC_SUPABASE_URL</code> and{" "}
-              <code className="font-mono">NEXT_PUBLIC_SUPABASE_ANON_KEY</code>, then redeploy.
+              Supabase is not configured. Edit{" "}
+              <code className="font-mono">.env.local</code> with your URL and anon key
+              (from Supabase → Settings → API), then run{" "}
+              <code className="font-mono">npm run env:check</code>. For Vercel, run{" "}
+              <code className="font-mono">npm run env:sync-vercel</code>.
             </p>
           ) : null}
 
