@@ -1,0 +1,101 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply min-h-screen text-white antialiased;
+    background: linear-gradient(
+      -45deg,
+      #ff6b35,
+      #f72585,
+      #7c3aed,
+      #0ea5e9,
+      #06b6d4,
+      #ff4757,
+      #a855f7
+    );
+    background-size: 400% 400%;
+    animation: blaze-shift 12s ease infinite;
+  }
+}
+
+@keyframes blaze-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@layer components {
+  .blazing-bg {
+    background: linear-gradient(
+      -45deg,
+      #ff6b35,
+      #f72585,
+      #7c3aed,
+      #0ea5e9,
+      #06b6d4,
+      #ff4757
+    );
+    background-size: 400% 400%;
+    animation: blaze-shift 12s ease infinite;
+  }
+
+  .blazing-panel {
+    @apply bg-gradient-to-br from-blaze-orange via-blaze-pink to-blaze-purple;
+    background-size: 200% 200%;
+    animation: blaze-shift 8s ease infinite;
+  }
+
+  .glass-card {
+    @apply rounded-2xl border border-white/25 bg-white/90 p-6 shadow-xl shadow-black/10 backdrop-blur-xl;
+  }
+
+  .card {
+    @apply glass-card text-sage-900;
+  }
+
+  .glass-nav {
+    @apply border-white/20 bg-black/30 backdrop-blur-xl;
+  }
+
+  .glass-form {
+    @apply rounded-2xl border border-white/30 bg-white/95 p-8 shadow-2xl backdrop-blur-xl;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blaze-orange via-blaze-pink to-blaze-purple px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blaze-pink/30 transition hover:scale-[1.02] hover:shadow-xl hover:shadow-blaze-magenta/40 disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-white/40 bg-white/20 px-4 py-2.5 text-sm font-medium text-white backdrop-blur-sm transition hover:bg-white/30 disabled:opacity-50;
+  }
+
+  .input-field {
+    @apply w-full rounded-xl border border-sage-200 bg-white px-4 py-2.5 text-sm text-sage-900 placeholder:text-sage-400 focus:border-blaze-violet focus:outline-none focus:ring-2 focus:ring-blaze-violet/30;
+  }
+
+  .label {
+    @apply mb-1.5 block text-sm font-medium text-sage-700;
+  }
+
+  .page-heading {
+    @apply text-2xl font-bold text-white drop-shadow-md;
+  }
+
+  .page-subheading {
+    @apply mt-1 text-white/85 drop-shadow-sm;
+  }
+
+  .loading-spinner {
+    @apply h-8 w-8 animate-spin rounded-full border-2 border-white/30 border-t-white;
+  }
+
+  .card .btn-secondary {
+    @apply border-sage-300 bg-white text-sage-700 hover:bg-sage-50;
+  }
+}
