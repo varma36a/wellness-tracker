@@ -1,38 +1,85 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { format } from "date-fns";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { format, endOfMonth, startOfMonth, parseISO } from "date-fns";
 import { createClient } from "@/lib/supabase/client";
 import type { ChecklistItem, ChecklistLog } from "@/lib/types";
+import {
+  buildMonthlyProgress,
+  MonthlyChecklistProgress,
+} from "@/components/MonthlyChecklistProgress";
 import { Check, Plus, Trash2, X } from "lucide-react";
 
 export default function ChecklistPage() {
   const [items, setItems] = useState<ChecklistItem[]>([]);
   const [logs, setLogs] = useState<ChecklistLog[]>([]);
+  const [monthLogs, setMonthLogs] = useState<ChecklistLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [newItemTitle, setNewItemTitle] = useState("");
   const [selectedDate, setSelectedDate] = useState(format(new Date(), "yyyy-MM-dd"));
+  const [selectedMonth, setSelectedMonth] = useState(format(new Date(), "yyyy-MM"));
   const [adding, setAdding] = useState(false);
 
   const today = format(new Date(), "yyyy-MM-dd");
 
-  async function loadData(date: string) {
+  const loadMonthLogs = useCallback(async (monthValue: string, activeItems: ChecklistItem[]) => {
+    if (activeItems.length === 0) {
+      setMonthLogs([]);
+      return;
+    }
+
+    const [year, month] = monthValue.split("-").map(Number);
+    const start = format(startOfMonth(new Date(year, month - 1)), "yyyy-MM-dd");
+    const end = format(endOfMonth(new Date(year, month - 1)), "yyyy-MM-dd");
+
     const supabase = createClient();
-    const [itemsRes, logsRes] = await Promise.all([
-      supabase.from("checklist_items").select("*").eq("is_active", true).order("sort_order"),
-      supabase.from("checklist_logs").select("*").eq("log_date", date),
-    ]);
-    setItems(itemsRes.data ?? []);
-    setLogs(logsRes.data ?? []);
-    setLoading(false);
-  }
+    const { data } = await supabase
+      .from("checklist_logs")
+      .select("*")
+      .gte("log_date", start)
+      .lte("log_date", end);
+
+    setMonthLogs(data ?? []);
+  }, []);
+
+  const loadData = useCallback(
+    async (date: string, monthValue: string) => {
+      const supabase = createClient();
+      const [itemsRes, logsRes] = await Promise.all([
+        supabase.from("checklist_items").select("*").eq("is_active", true).order("sort_order"),
+        supabase.from("checklist_logs").select("*").eq("log_date", date),
+      ]);
+
+      const activeItems = itemsRes.data ?? [];
+      setItems(activeItems);
+      setLogs(logsRes.data ?? []);
+      await loadMonthLogs(monthValue, activeItems);
+      setLoading(false);
+    },
+    [loadMonthLogs]
+  );
 
   useEffect(() => {
-    loadData(selectedDate);
-  }, [selectedDate]);
+    setLoading(true);
+    loadData(selectedDate, selectedMonth);
+  }, [selectedDate, selectedMonth, loadData]);
+
+  useEffect(() => {
+    if (selectedDate.startsWith(selectedMonth)) return;
+    setSelectedMonth(format(parseISO(selectedDate), "yyyy-MM"));
+  }, [selectedDate, selectedMonth]);
+
+  const monthly = useMemo(
+    () => buildMonthlyProgress(selectedMonth, items, monthLogs),
+    [selectedMonth, items, monthLogs]
+  );
 
   function isCompleted(itemId: string) {
     return logs.some((l) => l.item_id === itemId && l.completed);
+  }
+
+  async function refreshAll() {
+    await loadData(selectedDate, selectedMonth);
   }
 
   async function toggleItem(item: ChecklistItem) {
@@ -59,7 +106,7 @@ export default function ChecklistPage() {
       });
     }
 
-    await loadData(selectedDate);
+    await refreshAll();
   }
 
   async function addItem(e: React.FormEvent) {
@@ -80,13 +127,13 @@ export default function ChecklistPage() {
 
     setNewItemTitle("");
     setAdding(false);
-    await loadData(selectedDate);
+    await refreshAll();
   }
 
   async function removeItem(id: string) {
     const supabase = createClient();
     await supabase.from("checklist_items").update({ is_active: false }).eq("id", id);
-    await loadData(selectedDate);
+    await refreshAll();
   }
 
   const completedCount = items.filter((i) => isCompleted(i.id)).length;
@@ -131,6 +178,15 @@ export default function ChecklistPage() {
           />
         </div>
       </div>
+
+      <MonthlyChecklistProgress
+        monthValue={selectedMonth}
+        onMonthChange={setSelectedMonth}
+        days={monthly.days}
+        habits={monthly.habits}
+        monthAvg={monthly.monthAvg}
+        bestDay={monthly.bestDay}
+      />
 
       <div className="card mb-6">
         <div className="mb-4 flex items-center justify-between">
