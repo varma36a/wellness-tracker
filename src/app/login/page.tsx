@@ -134,12 +134,12 @@ export default function LoginPage() {
             </Link>
           </p>
 
-          <p className="mt-4 text-center text-sm text-sage-600">
+          {/* <p className="mt-4 text-center text-sm text-sage-600">
             First time here?{" "}
             <Link href="/signup" className="font-semibold text-blaze-purple hover:text-blaze-pink">
               Create your account
             </Link>
-          </p>
+          </p> */}
         </div>
       </div>
     </div>
