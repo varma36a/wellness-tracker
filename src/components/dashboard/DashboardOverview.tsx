@@ -4,11 +4,20 @@ import Link from "next/link";
 import { format } from "date-fns";
 import type { DashboardOverviewData } from "@/lib/data/dashboard";
 import type { MoodEntry } from "@/lib/types";
-import { ArrowRight, Brain, Heart, BookOpen, ListTodo, TrendingUp } from "lucide-react";
+import { ArrowRight, Brain, Heart, BookOpen, ListTodo, TrendingUp, Wallet } from "lucide-react";
 
 export function DashboardOverview({ data }: { data: DashboardOverviewData }) {
-  const { todayMood, recentMoods, todosActive, todosCompleted, latestReflection, latestEvent, eventCount } =
-    data;
+  const {
+    todayMood,
+    recentMoods,
+    todosActive,
+    todosCompleted,
+    latestReflection,
+    latestEvent,
+    eventCount,
+    financialGoals,
+    latestFinancial,
+  } = data;
 
   const avgMood =
     recentMoods.length > 0
@@ -22,7 +31,7 @@ export function DashboardOverview({ data }: { data: DashboardOverviewData }) {
         <p className="page-subheading">{format(new Date(), "EEEE, MMMM d, yyyy")}</p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard
           icon={<Heart className="h-5 w-5 text-rose-500" />}
           label="Today's mood"
@@ -61,6 +70,12 @@ export function DashboardOverview({ data }: { data: DashboardOverviewData }) {
           value={String(eventCount)}
           sub={latestEvent ? `Latest: ${latestEvent.title}` : "Log triggers & reprogramming"}
         />
+        <StatCard
+          icon={<Wallet className="h-5 w-5 text-emerald-600" />}
+          label="Financial goals"
+          value={String(financialGoals)}
+          sub={latestFinancial ? `Latest: ${latestFinancial.title}` : "Set goals & plan"}
+        />
       </div>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-2">
@@ -86,6 +101,11 @@ export function DashboardOverview({ data }: { data: DashboardOverviewData }) {
               href="/dashboard/events"
               title="Log a journal event"
               description="Capture triggers and rewrite subconscious patterns"
+            />
+            <QuickLink
+              href="/dashboard/financial"
+              title="Financial goals & planning"
+              description="Set targets, plan steps, and record money thoughts"
             />
           </div>
         </div>

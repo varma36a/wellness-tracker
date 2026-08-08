@@ -1,6 +1,6 @@
 import { format } from "date-fns";
 import { createClient } from "@/lib/supabase/server";
-import type { JournalEvent, MoodEntry, Reflection } from "@/lib/types";
+import type { FinancialEntry, JournalEvent, MoodEntry, Reflection } from "@/lib/types";
 
 export type DashboardOverviewData = {
   todayMood: MoodEntry | null;
@@ -10,13 +10,16 @@ export type DashboardOverviewData = {
   latestReflection: Pick<Reflection, "title" | "reflection_date"> | null;
   latestEvent: Pick<JournalEvent, "title" | "event_date"> | null;
   eventCount: number;
+  financialGoals: number;
+  latestFinancial: Pick<FinancialEntry, "title" | "entry_type"> | null;
 };
 
 export async function getDashboardOverview(): Promise<DashboardOverviewData> {
   const supabase = await createClient();
   const today = format(new Date(), "yyyy-MM-dd");
 
-  const [moodsRes, todosRes, reflectionRes, latestEventRes, eventCountRes] = await Promise.all([
+  const [moodsRes, todosRes, reflectionRes, latestEventRes, eventCountRes, financialRes, latestFinancialRes] =
+    await Promise.all([
     supabase
       .from("mood_entries")
       .select("id,mood_score,emotions,entry_date,created_at")
@@ -36,6 +39,17 @@ export async function getDashboardOverview(): Promise<DashboardOverviewData> {
       .limit(1)
       .maybeSingle(),
     supabase.from("journal_events").select("id", { count: "exact", head: true }),
+    supabase
+      .from("financial_entries")
+      .select("id", { count: "exact", head: true })
+      .eq("entry_type", "goal")
+      .eq("status", "active"),
+    supabase
+      .from("financial_entries")
+      .select("title,entry_type")
+      .order("entry_date", { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ]);
 
   const recentMoods = (moodsRes.data ?? []) as MoodEntry[];
@@ -53,5 +67,7 @@ export async function getDashboardOverview(): Promise<DashboardOverviewData> {
     latestReflection: reflectionRes.data,
     latestEvent: latestEventRes.data,
     eventCount: eventCountRes.count ?? 0,
+    financialGoals: financialRes.count ?? 0,
+    latestFinancial: latestFinancialRes.data,
   };
 }

@@ -7,6 +7,7 @@ import {
   BookOpen,
   Brain,
   ListTodo,
+  Wallet,
   Heart,
   LayoutDashboard,
   Settings,
@@ -23,6 +24,7 @@ const navItems = [
   { href: "/dashboard/todos", label: "Todo List", icon: ListTodo },
   { href: "/dashboard/reflections", label: "Reflections", icon: BookOpen },
   { href: "/dashboard/events", label: "Journal Events", icon: Brain },
+  { href: "/dashboard/financial", label: "Financial Goals", icon: Wallet },
   { href: "/dashboard/settings", label: "Security", icon: Settings },
 ];
 

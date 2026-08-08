@@ -53,6 +53,22 @@ export type JournalEvent = {
   updated_at: string;
 };
 
+export type FinancialEntry = {
+  id: string;
+  user_id: string;
+  title: string;
+  entry_type: string;
+  target_amount: number | null;
+  current_amount: number | null;
+  category: string | null;
+  content: string | null;
+  target_date: string | null;
+  status: string;
+  entry_date: string;
+  created_at: string;
+  updated_at: string;
+};
+
 export type UserSettings = {
   user_id: string;
   pin_hash: string | null;
@@ -121,6 +137,40 @@ export const REFLECTION_PROMPTS = [
   "What would you do differently?",
   "How did your body feel today?",
   "What pattern do you notice?",
+];
+
+export const FINANCIAL_ENTRY_TYPES = [
+  { value: "goal", label: "Goal", description: "A savings or financial target to work toward" },
+  { value: "plan", label: "Plan", description: "Steps and strategy to reach your goals" },
+  { value: "thought", label: "Thought", description: "Reflect on money mindset, decisions, and feelings" },
+] as const;
+
+export const FINANCIAL_CATEGORIES = [
+  "Emergency fund",
+  "Savings",
+  "Investments",
+  "Debt payoff",
+  "Retirement",
+  "Education",
+  "Home",
+  "Travel",
+  "Business",
+  "Other",
+] as const;
+
+export const FINANCIAL_GOAL_STATUSES = [
+  { value: "active", label: "Active" },
+  { value: "achieved", label: "Achieved" },
+  { value: "paused", label: "Paused" },
+] as const;
+
+export const FINANCIAL_THOUGHT_PROMPTS = [
+  "How do I feel about my finances right now?",
+  "What money belief am I questioning?",
+  "What would financial freedom look like for me?",
+  "What small step can I take this week?",
+  "What am I grateful for financially?",
+  "What spending pattern do I notice?",
 ];
 
 export const TODO_PRIORITIES = [
