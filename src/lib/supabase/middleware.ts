@@ -79,6 +79,12 @@ export async function updateSession(request: NextRequest) {
           url.pathname = "/pin";
           return NextResponse.redirect(url);
         }
+
+        supabaseResponse.cookies.set("pin_verified", user.id, {
+          path: "/",
+          maxAge: 60 * 60 * 24 * 30,
+          sameSite: "lax",
+        });
       }
     }
   } catch {

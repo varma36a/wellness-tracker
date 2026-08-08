@@ -38,6 +38,10 @@ export default function LoginPage() {
           .eq("user_id", data.user.id)
           .maybeSingle();
 
+        if (!settings?.pin_enabled) {
+          document.cookie = `pin_verified=${data.user.id}; path=/; max-age=${60 * 60 * 24 * 30}; SameSite=Lax`;
+        }
+
         router.push(settings?.pin_enabled ? "/pin" : "/dashboard");
       } else {
         router.push("/dashboard");

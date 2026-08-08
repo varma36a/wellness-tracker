@@ -18,6 +18,13 @@
     background-size: 400% 400%;
     animation: blaze-shift 12s ease infinite;
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    body {
+      animation: none;
+      background-size: 100% 100%;
+    }
+  }
 }
 
 @keyframes blaze-shift {
@@ -45,6 +52,10 @@
     animation: blaze-shift 12s ease infinite;
   }
 
+  .dashboard-bg {
+    background: linear-gradient(135deg, #ff6b35 0%, #f72585 35%, #7c3aed 70%, #0ea5e9 100%);
+  }
+
   .blazing-panel {
     @apply bg-gradient-to-br from-blaze-orange via-blaze-pink to-blaze-purple;
     background-size: 200% 200%;
@@ -52,7 +63,7 @@
   }
 
   .glass-card {
-    @apply rounded-2xl border border-white/25 bg-white/90 p-6 shadow-xl shadow-black/10 backdrop-blur-xl;
+    @apply rounded-2xl border border-white/25 bg-white/95 p-6 shadow-xl shadow-black/10;
   }
 
   .card {
@@ -60,11 +71,11 @@
   }
 
   .glass-nav {
-    @apply border-white/20 bg-black/30 backdrop-blur-xl;
+    @apply border-white/20 bg-black/40;
   }
 
   .glass-form {
-    @apply rounded-2xl border border-white/30 bg-white/95 p-8 shadow-2xl backdrop-blur-xl;
+    @apply rounded-2xl border border-white/30 bg-white/95 p-8 shadow-2xl;
   }
 
   .btn-primary {
