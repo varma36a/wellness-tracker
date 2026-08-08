@@ -4,10 +4,10 @@ import Link from "next/link";
 import { format } from "date-fns";
 import type { DashboardOverviewData } from "@/lib/data/dashboard";
 import type { MoodEntry } from "@/lib/types";
-import { ArrowRight, Brain, CheckSquare, Heart, BookOpen, TrendingUp } from "lucide-react";
+import { ArrowRight, Brain, Heart, BookOpen, ListTodo, TrendingUp } from "lucide-react";
 
 export function DashboardOverview({ data }: { data: DashboardOverviewData }) {
-  const { todayMood, recentMoods, checklistDone, checklistTotal, latestReflection, latestEvent, eventCount } =
+  const { todayMood, recentMoods, todosActive, todosCompleted, latestReflection, latestEvent, eventCount } =
     data;
 
   const avgMood =
@@ -30,13 +30,13 @@ export function DashboardOverview({ data }: { data: DashboardOverviewData }) {
           sub={todayMood?.emotions?.slice(0, 2).join(", ") || "Log how you feel"}
         />
         <StatCard
-          icon={<CheckSquare className="h-5 w-5 text-sage-600" />}
-          label="Checklist today"
-          value={`${checklistDone}/${checklistTotal}`}
+          icon={<ListTodo className="h-5 w-5 text-sage-600" />}
+          label="Todo list"
+          value={`${todosActive} active`}
           sub={
-            checklistTotal > 0
-              ? `${Math.round((checklistDone / checklistTotal) * 100)}% complete`
-              : "Add habits"
+            todosActive + todosCompleted > 0
+              ? `${todosCompleted} completed`
+              : "Add your first task"
           }
         />
         <StatCard
@@ -73,9 +73,9 @@ export function DashboardOverview({ data }: { data: DashboardOverviewData }) {
               description="Track emotions, energy, and behavior patterns"
             />
             <QuickLink
-              href="/dashboard/checklist"
-              title="Complete daily checklist"
-              description="Mark off your wellness habits"
+              href="/dashboard/todos"
+              title="Manage your todos"
+              description="Track tasks, priorities, and due dates"
             />
             <QuickLink
               href="/dashboard/reflections"

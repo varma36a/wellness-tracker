@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import {
   BookOpen,
   Brain,
-  CheckSquare,
+  ListTodo,
   Heart,
   LayoutDashboard,
   Settings,
@@ -20,7 +20,7 @@ import { useState } from "react";
 const navItems = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard },
   { href: "/dashboard/mood", label: "Mood & Behavior", icon: Heart },
-  { href: "/dashboard/checklist", label: "Daily Checklist", icon: CheckSquare },
+  { href: "/dashboard/todos", label: "Todo List", icon: ListTodo },
   { href: "/dashboard/reflections", label: "Reflections", icon: BookOpen },
   { href: "/dashboard/events", label: "Journal Events", icon: Brain },
   { href: "/dashboard/settings", label: "Security", icon: Settings },

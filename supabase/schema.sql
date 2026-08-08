@@ -15,25 +15,18 @@ CREATE TABLE IF NOT EXISTS mood_entries (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- Reusable checklist item templates
-CREATE TABLE IF NOT EXISTS checklist_items (
+-- Todo list items
+CREATE TABLE IF NOT EXISTS todos (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   title TEXT NOT NULL,
-  sort_order INTEGER NOT NULL DEFAULT 0,
-  is_active BOOLEAN NOT NULL DEFAULT TRUE,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- Daily completion log per checklist item
-CREATE TABLE IF NOT EXISTS checklist_logs (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  item_id UUID NOT NULL REFERENCES checklist_items(id) ON DELETE CASCADE,
-  log_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  notes TEXT,
   completed BOOLEAN NOT NULL DEFAULT FALSE,
+  priority TEXT NOT NULL DEFAULT 'medium',
+  due_date DATE,
+  sort_order INTEGER NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  UNIQUE (user_id, item_id, log_date)
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 -- Self-reflection journal entries
@@ -51,14 +44,13 @@ CREATE TABLE IF NOT EXISTS reflections (
 
 -- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_mood_entries_user_date ON mood_entries(user_id, entry_date DESC);
-CREATE INDEX IF NOT EXISTS idx_checklist_items_user ON checklist_items(user_id, sort_order);
-CREATE INDEX IF NOT EXISTS idx_checklist_logs_user_date ON checklist_logs(user_id, log_date DESC);
+CREATE INDEX IF NOT EXISTS idx_todos_user_completed ON todos(user_id, completed, sort_order);
+CREATE INDEX IF NOT EXISTS idx_todos_user_due ON todos(user_id, due_date);
 CREATE INDEX IF NOT EXISTS idx_reflections_user_date ON reflections(user_id, reflection_date DESC);
 
 -- Row Level Security
 ALTER TABLE mood_entries ENABLE ROW LEVEL SECURITY;
-ALTER TABLE checklist_items ENABLE ROW LEVEL SECURITY;
-ALTER TABLE checklist_logs ENABLE ROW LEVEL SECURITY;
+ALTER TABLE todos ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reflections ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users manage own mood entries"
@@ -66,13 +58,8 @@ CREATE POLICY "Users manage own mood entries"
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
-CREATE POLICY "Users manage own checklist items"
-  ON checklist_items FOR ALL
-  USING (auth.uid() = user_id)
-  WITH CHECK (auth.uid() = user_id);
-
-CREATE POLICY "Users manage own checklist logs"
-  ON checklist_logs FOR ALL
+CREATE POLICY "Users manage own todos"
+  ON todos FOR ALL
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
 
@@ -94,6 +81,19 @@ CREATE TRIGGER reflections_updated_at
   BEFORE UPDATE ON reflections
   FOR EACH ROW
   EXECUTE FUNCTION update_reflection_timestamp();
+
+CREATE OR REPLACE FUNCTION update_todo_timestamp()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER todos_updated_at
+  BEFORE UPDATE ON todos
+  FOR EACH ROW
+  EXECUTE FUNCTION update_todo_timestamp();
 
 -- Journal events: life events + subconscious programming work
 CREATE TABLE IF NOT EXISTS journal_events (

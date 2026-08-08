@@ -9,7 +9,7 @@ const geist = Geist({
 
 export const metadata: Metadata = {
   title: "Wellness Tracker — Mood, Habits & Reflections",
-  description: "Personal emotion and behavior pattern tracker with checklists and self-reflections",
+  description: "Personal emotion and behavior pattern tracker with todos and self-reflections",
 };
 
 export default function RootLayout({

@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { DEFAULT_CHECKLIST_ITEMS } from "@/lib/types";
 import { Sparkles } from "lucide-react";
 
 export default function SignupPage() {
@@ -39,15 +38,6 @@ export default function SignupPage() {
       setError(authError.message);
       setLoading(false);
       return;
-    }
-
-    if (data.user) {
-      const items = DEFAULT_CHECKLIST_ITEMS.map((title, i) => ({
-        user_id: data.user!.id,
-        title,
-        sort_order: i,
-      }));
-      await supabase.from("checklist_items").insert(items);
     }
 
     router.push("/dashboard");

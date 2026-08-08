@@ -11,22 +11,17 @@ export type MoodEntry = {
   created_at: string;
 };
 
-export type ChecklistItem = {
+export type Todo = {
   id: string;
   user_id: string;
   title: string;
-  sort_order: number;
-  is_active: boolean;
-  created_at: string;
-};
-
-export type ChecklistLog = {
-  id: string;
-  user_id: string;
-  item_id: string;
-  log_date: string;
+  notes: string | null;
   completed: boolean;
+  priority: string;
+  due_date: string | null;
+  sort_order: number;
   created_at: string;
+  updated_at: string;
 };
 
 export type Reflection = {
@@ -128,12 +123,8 @@ export const REFLECTION_PROMPTS = [
   "What pattern do you notice?",
 ];
 
-export const DEFAULT_CHECKLIST_ITEMS = [
-  "Drink enough water",
-  "Move your body",
-  "Eat nourishing meals",
-  "Take breaks from screens",
-  "Practice mindfulness",
-  "Connect with someone",
-  "Get enough sleep",
-];
+export const TODO_PRIORITIES = [
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
+] as const;
